@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      .box {
+        display: flex;
+        width: 100%;
+        height: 100vh;
+      }
+      .left {
+        width: 300px;
+        margin-left: 20px;
+      }
+      .right {
+        flex: 1;
+        border: 1px solid #000;
+        position: relative;
+      }
+      .boxx {
+        border: 1px solid #000;
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background-size: contain;
+      }
+      .b1 {
+        top: 50px;
+        left: 50px;
+        width: 200px;
+        height: 200px;
+      }
+
+      .b2 {
+        top: 100px;
+        right: 100px;
+        width: 100px;
+        height: 100px;
+      }
+      .b3 {
+        bottom: 200px;
+        left: 200px;
+        width: 100px;
+        height: 100px;
+      }
+      *:lang(en-us) {
+        font-size: 14px;
+        border: 1px solid red;
+      }
+      .dot {
+        position: absolute;
+        background-color: #08f142;
+        width: 10px;
+        height: 10px;
+      }
+      .s-bar {
+        width: 10px;
+        height: 40px;
+      }
+      .h-bar {
+        width: 40px;
+        height: 10px;
+      }
+      .lt {
+        top: -5px;
+        left: -5px;
+        cursor: nwse-resize;
+      }
+      .l {
+        top: 50%;
+        left: -5px;
+        transform: translateY(-50%);
+        cursor: ew-resize;
+      }
+      .lb {
+        bottom: -5px;
+        left: -5px;
+        cursor: sw-resize;
+      }
+      .b {
+        bottom: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        cursor: ns-resize;
+      }
+      .br {
+        bottom: -5px;
+        right: -5px;
+        cursor: nwse-resize;
+      }
+      .rt {
+        top: -5px;
+        right: -5px;
+        cursor: sw-resize;
+      }
+      .r {
+        top: 50%;
+        right: -5px;
+        transform: translateY(-50%);
+        cursor: ew-resize;
+      }
+      .t {
+        top: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        cursor: ns-resize;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <div class="left">
+        <div class="txt" lang="zh">
+          欢迎来到深圳 <button onclick="reset()">全部恢复</button>
+        </div>
+        <div class="txt" lang="en-us">welcome to shenzhen</div>
+        <input type="file" id="file" />
+        <canvas id="can" width="300" height="300"></canvas>
+        <button onclick="caoz(1)">反转</button>
+        <button onclick="caoz(2)">黑白</button>
+        <button onclick="caoz(3)">加权平均</button>
+        <button onclick="caoz(4)">高亮</button>
+        <button onclick="caoz(5)">复古</button>
+        <button onclick="caoz(6)">红色</button>
+        <button onclick="caoz(7)">透明</button>
+        <button onclick="test()">测试</button>
+
+        <canvas id="can2" width="300" height="300" draggable="true"></canvas>
+        <button onclick="setType('text/html')">html</button>
+        <button onclick="setType('application/pdf')">pdf</button>
+        <button onclick="setType('image/png')">png</button>
+        <button onclick="setType('image/jpeg')">jpg</button>
+        <button onclick="setType('application/json')">json</button>
+        <button onclick="setType('image/bmp')">bmp</button>
+        <button onclick="setType('application/rtf')">rtf</button>
+        <button onclick="setType('image/svg+xml')">svg</button>
+        <!-- <button onclick="curl()">测试</button> -->
+      </div>
+      <div class="right">
+        <div class="boxx b1">
+          <!-- <div class="dot lt"></div> -->
+          <div class="dot l s-bar"></div>
+          <!-- <div class="dot lb"></div> -->
+          <div class="dot b h-bar"></div>
+          <!-- <div class="dot br"></div> -->
+          <div class="dot r s-bar"></div>
+          <!-- <div class="dot rt"></div> -->
+          <div class="dot t h-bar"></div>
+        </div>
+        <div class="boxx b2"></div>
+        <div class="boxx b3"></div>
+      </div>
+    </div>
+    <script>
+      let b1 = document.querySelector(".b1");
+      let right = document.querySelector(".right");
+      let fragment = document.createDocumentFragment();
+      let start = {
+        x: 0,
+        y: 0,
+      };
+      let { x: rx, y: ry } = right.getBoundingClientRect();
+      right.onmousedown = function (e) {
+        let { offsetX, offsetY } = e;
+        start.x = offsetX;
+        start.y = offsetY;
+        let target = e.target;
+        if (!target.classList.contains("boxx")) {
+          return;
+        }
+        document.onmousemove = function (en) {
+          let { clientX, clientY } = en;
+          if (en.target.parentNode.classList.contains("b1")) {
+            //在b1盒子中的元素移动
+            let { x, y } = b1.getBoundingClientRect();
+            let nx = clientX - start.x - x;
+            let ny = clientY - start.y - y;
+            target.style.left = nx + "px";
+            target.style.top = ny + "px";
+          } else {
+            let x = clientX - rx - start.x;
+            let y = clientY - ry - start.y;
+            target.style.left = x + "px";
+            target.style.top = y + "px";
+          }
+        };
+        document.onmouseup = function (e) {
+          document.onmousemove = null;
+          if (!e.target.classList.contains("boxx")) return;
+          let { clientX, clientY } = e;
+          let { x, y, width, height } = b1.getBoundingClientRect();
+          let {
+            x: x2,
+            y: y2,
+            width: width2,
+            height: height2,
+          } = e.target.getBoundingClientRect();
+          let tx = clientX - start.x;
+          let ty = clientY - start.y;
+          if (
+            tx > x &&
+            tx + width2 < x + width &&
+            ty > y &&
+            ty + height2 < y + height
+          ) {
+            //  进入b1盒子中
+            let nx = tx - x;
+            let ny = ty - y;
+            e.target.style.left = nx + "px";
+            e.target.style.top = ny + "px";
+            b1.appendChild(e.target);
+          } else {
+            let { left } = right.getBoundingClientRect();
+            if (tx < left && tx + width2 < left) {
+              fragment.appendChild(e.target);
+              return;
+            }
+            if (e.target.parentNode.classList.contains("b1")) {
+              //在b1盒子中的元素 现在跑出去了
+              right.appendChild(e.target);
+              e.target.style.left = clientX - rx - start.x + "px";
+              e.target.style.top = clientY - ry - start.y + "px";
+            }
+          }
+        };
+      };
+
+      let fileInp = document.getElementById("file");
+      let can = document.getElementById("can");
+      let can2 = document.getElementById("can2");
+      let ctx = can.getContext("2d");
+      let ctx2 = can2.getContext("2d");
+      let imgData = null;
+      fileInp.onchange = function () {
+        let file = fileInp.files[0];
+        let url = URL.createObjectURL(file);
+        let img = new Image();
+        img.src = url;
+        img.onload = function () {
+          ctx.drawImage(img, 0, 0, can.width, can.height);
+        };
+      };
+
+      function caoz(type) {
+        imgData = ctx.getImageData(0, 0, can.width, can.height);
+        switch (type) {
+          case 1:
+            fzData(imgData.data);
+            break;
+          case 2:
+            hbdata(imgData.data);
+            break;
+          case 3:
+            jqpjdata(imgData.data);
+            break;
+          case 4:
+            gldata(imgData.data);
+            break;
+          case 5:
+            fgdata(imgData.data);
+            break;
+          case 6:
+            hsdata(imgData.data);
+            break;
+          case 7:
+            tmdata(imgData.data);
+            break;
+          default:
+            break;
+        }
+        ctx2.putImageData(imgData, 0, 0);
+      }
+      function hbdata(data2) {
+        for (let i = 0; i < data2.length; i += 4) {
+          var average = (data2[i + 0] + data2[i + 1] + data2[i + 2]) / 3;
+          data2[i + 0] = average;
+          data2[i + 1] = average;
+          data2[i + 2] = average;
+        }
+      }
+      function jqpjdata(data2) {
+        for (let i = 0; i < data2.length; i += 4) {
+          var grayscale =
+            data2[i + 0] * 0.3 + data2[i + 1] * 0.6 + data2[i + 2] * 0.1;
+          data2[i + 0] = grayscale;
+          data2[i + 1] = grayscale;
+          data2[i + 2] = grayscale;
+        }
+      }
+      function gldata(data2) {
+        for (let i = 0; i < data2.length; i += 4) {
+          var a = 50;
+          data2[i + 0] = data2[i + 0] + a;
+          data2[i + 1] = data2[i + 1] + a;
+          data2[i + 2] = data2[i + 2] + a;
+        }
+      }
+      function fgdata(data2) {
+        for (let i = 0; i < data2.length; i += 4) {
+          var r = data2[i + 0];
+          var g = data2[i + 1];
+          var b = data2[i + 2];
+
+          data2[i + 0] = r * 0.39 + g * 0.76 + b * 0.18;
+          data2[i + 1] = r * 0.35 + g * 0.68 + b * 0.16;
+          data2[i + 2] = r * 0.27 + g * 0.53 + b * 0.13;
+        }
+      }
+      function hsdata(data2) {
+        for (let i = 0; i < data2.length; i += 4) {
+          var r = data2[i + 0];
+          var g = data2[i + 1];
+          var b = data2[i + 2];
+
+          var average = (r + g + b) / 3;
+          data2[i + 0] = average;
+          data2[i + 1] = 0;
+          data2[i + 2] = 0;
+        }
+      }
+      function tmdata(data2) {
+        for (let i = 0; i < data2.length; i += 4) {
+          data2[i + 3] = data2[i + 3] * 0.3;
+        }
+      }
+
+      function fzData(data2) {
+        for (let i = 0; i < data2.length; i += 4) {
+          data2[i + 0] = 255 - data2[i + 0];
+          data2[i + 1] = 255 - data2[i + 1];
+          data2[i + 2] = 255 - data2[i + 2];
+        }
+      }
+
+      function test() {
+        imgData = ctx.getImageData(0, 0, can.width, can.height);
+        let data2 = imgData.data;
+        for (let i = 0; i < data2.length; i += 4) {
+          let max = Math.max(data2[i], data2[i + 1], data2[i + 2]);
+          if (max < 128) {
+            data2[i] = 255;
+            data2[i + 1] = 255;
+            data2[i + 2] = 255;
+          } else {
+            data2[i] = 0;
+            data2[i + 1] = 0;
+            data2[i + 2] = 0;
+          }
+        }
+        ctx2.putImageData(imgData, 0, 0);
+      }
+
+      const drag_key = "url_key";
+      can2.ondragstart = function (e) {
+        let url = can2.toDataURL();
+        e.dataTransfer.setData(drag_key, url);
+      };
+
+      right.ondragover = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.dataTransfer.dropEffect = "copy";
+      };
+
+      right.ondrop = function (e) {
+        let imgUrl = e.dataTransfer.getData(drag_key);
+        if (!imgUrl) return;
+        let target = e.target;
+        if (target.classList.contains("boxx")) {
+          target.style.backgroundImage = `url(${imgUrl})`;
+          return;
+        }
+        let div = document.createElement("div");
+        div.classList.add("boxx");
+        div.style.backgroundImage = `url(${imgUrl})`;
+        let { offsetX, offsetY } = e;
+        div.style.left = offsetX + "px";
+        div.style.top = offsetY + "px";
+        right.appendChild(div);
+      };
+
+      let rsize = document.querySelector(".r.s-bar");
+      let lsize = document.querySelector(".l.s-bar");
+      let tsize = document.querySelector(".t.h-bar");
+      let bsize = document.querySelector(".b.h-bar");
+
+      let mstart = {
+        x: 0,
+        y: 0,
+        w: 0,
+        h: 0,
+        l: 0,
+        t: 0,
+      };
+
+      rsize.onmousedown = function (e) {
+        let { clientX, clientY } = e;
+        mstart.x = clientX;
+        mstart.y = clientY;
+        mstart.w = b1.offsetWidth;
+        document.addEventListener("mousemove", rresize);
+      };
+      function rresize(en) {
+        let { clientX: x2, clientY: y2 } = en;
+        let w = x2 - mstart.x;
+        b1.style.width = mstart.w + w + "px";
+      }
+
+      lsize.onmousedown = function (e) {
+        let { clientX, clientY } = e;
+        mstart.x = clientX;
+        mstart.y = clientY;
+        mstart.w = b1.offsetWidth;
+        mstart.l = b1.offsetLeft;
+        document.addEventListener("mousemove", lresize);
+      };
+      function lresize(en) {
+        let { clientX: x2, clientY: y2 } = en;
+        let w = x2 - mstart.x;
+        b1.style.width = mstart.w - w + "px";
+        b1.style.left = mstart.l + w + "px";
+      }
+
+      tsize.onmousedown = function (e) {
+        let { clientX, clientY } = e;
+        mstart.x = clientX;
+        mstart.y = clientY;
+        mstart.h = b1.offsetHeight;
+        mstart.t = b1.offsetTop;
+        document.addEventListener("mousemove", tresize);
+      };
+      function tresize(en) {
+        let { clientX: x2, clientY: y2 } = en;
+        let h = y2 - mstart.y;
+        b1.style.height = mstart.h - h + "px";
+        b1.style.top = mstart.t + h + "px";
+      }
+      bsize.onmousedown = function (e) {
+        let { clientX, clientY } = e;
+        mstart.x = clientX;
+        mstart.y = clientY;
+        mstart.h = b1.offsetHeight;
+        document.addEventListener("mousemove", bresize);
+      };
+      function bresize(en) {
+        let { clientX: x2, clientY: y2 } = en;
+        let h = y2 - mstart.y;
+        b1.style.height = mstart.h + h + "px";
+      }
+
+      document.addEventListener("mouseup", function () {
+        document.removeEventListener("mousemove", rresize);
+        document.removeEventListener("mousemove", lresize);
+        document.removeEventListener("mousemove", tresize);
+        document.removeEventListener("mousemove", bresize);
+      });
+
+      function reset() {
+        right.appendChild(fragment);
+      }
+
+      function setType(t) {
+        let el = new Blob([right], { type: t });
+        let url = URL.createObjectURL(el);
+      }
+    </script>
+  </body>
+</html>
